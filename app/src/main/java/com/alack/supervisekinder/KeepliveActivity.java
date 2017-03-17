@@ -27,8 +27,8 @@ public class KeepliveActivity extends Activity {
         WindowManager.LayoutParams params = win.getAttributes();
         params.x = 0;
         params.y = 0;
-        params.height = 300;
-        params.width = 300;
+        params.height = 1;
+        params.width = 1;
         //params.setTitle("AKinder...");
         win.setAttributes(params);
 
@@ -48,6 +48,7 @@ public class KeepliveActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "onDestroy() - ");
+        KinderApplication.getInstance().removeActivity(this);
     }
 
     @Override

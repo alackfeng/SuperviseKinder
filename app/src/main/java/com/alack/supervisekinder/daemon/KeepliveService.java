@@ -2,12 +2,14 @@ package com.alack.supervisekinder.daemon;
 
 import android.app.Service;
 import android.content.Intent;
+import android.net.ConnectivityManager;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
 
 import com.alack.supervisekinder.KinderApplication;
 import com.alack.supervisekinder.utils.Const;
 import com.alack.supervisekinder.utils.LogManager;
+
 
 /**
  * Created by taurus on 2017/3/12.
@@ -27,17 +29,17 @@ public class KeepliveService extends Service {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand() - action : " + intent.getAction());
-        int notficationID = -1;
+        int notificationID = -1;
         String action = intent.getAction();
 
         // foreground notification
         if(action.equals(Const.getNotificationHideMonitor()))
-            notficationID = Const.getScrennRecordNotificationMonitor();
+            notificationID = Const.getScrennRecordNotificationMonitor();
         if(action.equals(Const.getNotificationHideRecord()))
-            notficationID = Const.getScrennRecordNotificationRecord();
+            notificationID = Const.getScrennRecordNotificationRecord();
 
-        if(notficationID != -1) {
-            KinderApplication.getInstance().startForeground(notficationID, action, this);
+        if(notificationID != -1) {
+            KinderApplication.getInstance().startForeground(notificationID, action, this);
         }
 
         // system broadcast
@@ -55,7 +57,18 @@ public class KeepliveService extends Service {
             case Intent.ACTION_MAIN:  // start MainActivity for RecordMedia
                 KinderApplication.getInstance().startMain();
                 break;
+            case Intent.ACTION_BOOT_COMPLETED: // boot up
+                KinderApplication.getInstance().startMain();
+                break;
+            case ConnectivityManager.CONNECTIVITY_ACTION: // wifi change
+                KinderApplication.getInstance().checkWifi();
+                break;
+            default:
+                KinderApplication.getInstance().checkApp();
+                break;
         }
         return Service.START_STICKY;
     }
+
+
 }

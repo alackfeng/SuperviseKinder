@@ -24,6 +24,10 @@ public class Const {
     static final String NOTIFICATION_HIDE_MONITOR       = "com.alack.supervisekinder.daemon.MonitorService";
     static final String NOTIFICATION_HIDE_RECORD        = "com.alack.supervisekinder.RecorderService";
 
+    // wifi state
+    static final String CONNECTIVITY_ACTION_START = "com.alack.supervisekinder.net.conn.CONNECTIVITY_CHANGE.start";
+    static final String CONNECTIVITY_ACTION_END = "com.alack.supervisekinder.net.conn.CONNECTIVITY_CHANGE.end";
+
     // recording
     static final String SCREEN_RECORDING_START          = "com.alack.supervisekinder.services.action.startrecording";
     static final String SCREEN_RECORDING_STOP           = "com.alack.supervisekinder.services.action.stoprecording";
@@ -105,6 +109,13 @@ public class Const {
         return NOTIFICATION_HIDE_RECORD;
     }
 
+    // wifi state
+    public static String getConnectivityActionEnd() {
+        return CONNECTIVITY_ACTION_END;
+    }
+    public static String getConnectivityActionStart() {
+        return CONNECTIVITY_ACTION_START;
+    }
 
     // service notifcation id
     public static int getScrennRecordNotificationRecord() {

@@ -60,7 +60,14 @@ public class MonitorService extends Service {
         Log.d(TAG, "onStartCommand() intent action: " + intent.getAction() + ", flags: " + flags);
         //flags = START_STICKY;
         //return super.onStartCommand(intent, flags, startId);
-
+        String action = intent.getAction();
+        if(action!= null) {
+            if(action.equals(Const.getConnectivityActionStart())) {
+                taskFtpUpload(true);
+            } else if(action.equals(Const.getConnectivityActionEnd())) {
+                taskFtpUpload(false);
+            }
+        }
         return START_STICKY; // auto rerun
     }
 
@@ -68,6 +75,8 @@ public class MonitorService extends Service {
     public void onDestroy() {
         //super.onDestroy();
         Log.d(TAG, "onDestroy() count:" + UPCOUNT);
+        taskRunning = false;
+        KinderApplication.getInstance().removeService(this);
         //Intent lIntent = new Intent(this, MonitorService.class);
         //this.startService(lIntent);
     }
@@ -98,7 +107,7 @@ public class MonitorService extends Service {
             this.interval   = inter;
             this.action     = action;
             this.last       = -1;
-            //Log.e(TAG, "--------------" + this.item + ":" + this.interval + ":" + this.action);
+            //Log.e(TAG, "Task() -------- " + this.item + ":" + this.interval + ":" + this.action);
         }
 
         public void setTask(TaskInterface task) {
@@ -145,7 +154,7 @@ public class MonitorService extends Service {
             public void run(String action) {
                 Log.e(TAG, "TaskInterface run...action - " + action);
                 // start MainActivity
-                KinderApplication.getInstance().notfiyKeeplive((Service)This_, Intent.ACTION_MAIN);
+                KinderApplication.getInstance().notifyKeeplive((Service)This_, Intent.ACTION_MAIN);
             }
         });
         mTasklist.add(taskA);
@@ -200,6 +209,19 @@ public class MonitorService extends Service {
         mTasklist.add(taskE);
     }
 
+    private void taskFtpUpload(boolean bUp) {
+        if(mTasklist.isEmpty())
+            return;
+        for(Task task: mTasklist) {
+            if(task.item != TASK_FILE_FTPUPLOAD)
+                continue;
+            if(bUp)
+                task.interval = 100;
+            else
+                task.interval = -1;
+            break;
+        }
+    }
 
     final Handler handler = new Handler(new Handler.Callback() {
         @Override
@@ -262,7 +284,7 @@ public class MonitorService extends Service {
             return;
 
         Log.i(TAG, "startForeGround() :" + bFore);
-        KinderApplication.getInstance().notfiyKeeplive(this, Const.getNotificationHideMonitor());
+        KinderApplication.getInstance().notifyKeeplive(this, Const.getNotificationHideMonitor());
     }
 
 }

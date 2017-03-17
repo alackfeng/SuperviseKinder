@@ -73,10 +73,13 @@ public class LogManager implements Thread.UncaughtExceptionHandler {
             mDefaultHandler.uncaughtException(thread, ex);
         } else {
             try {
-                Thread.sleep(3000);
+                Thread.sleep(2000);
             } catch (InterruptedException e) {
                 Log.e("LogManager", "uncaughtException error : ", e);
             }
+
+            // restart app
+            //KinderApplication.getInstance().restart(null);
             // exit app
             android.os.Process.killProcess(android.os.Process.myPid());
             System.exit(1);
@@ -92,7 +95,7 @@ public class LogManager implements Thread.UncaughtExceptionHandler {
         //Save the log file
         String str = saveCrashInfo2File(ex);
         Log.e(TAG, str);
-        return false;
+        return true;
     }
 
     public void collectDeviceInfo(Context ctx) {
@@ -137,7 +140,7 @@ public class LogManager implements Thread.UncaughtExceptionHandler {
         try {
 
             String time = formatter.format(new Date());
-            String fileName = "CRS_" + time + ".txt";
+            String fileName = "Kinder_CRS_" + time + ".txt";
             //noinspection ConstantConditions
             File sdDir = mContext.getExternalFilesDir("logs").getAbsoluteFile();
             File file;

@@ -24,7 +24,7 @@ public class MainActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Log.i(TAG, "onCreate() - this : " + this.toString());
+        Log.i(TAG, "onCreate() - this :) " + this.toString());
 
         KinderApplication.getInstance().init(this);
 
@@ -52,7 +52,7 @@ public class MainActivity extends Activity {
         if(resultCode == RESULT_OK && requestCode == Const.getRequestCodeScreenRecord()) {
 
             KinderApplication.getInstance().startRecService(data, resultCode);
-            KinderApplication.getInstance().startMonitorService();
+            KinderApplication.getInstance().startMonitorService(null, null);
             //finish();
             moveTaskToBack(false);
         }
@@ -94,6 +94,7 @@ public class MainActivity extends Activity {
     protected void onDestroy() {
         super.onDestroy();
         Log.i(TAG, "onDestroy() - ");
+        KinderApplication.getInstance().uninit();
     }
 
     @Override

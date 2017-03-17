@@ -39,7 +39,7 @@ public class RecorderService extends Service {
     @SuppressWarnings("FieldCanBeLocal")
     private int          BITRATE      = 3 * 1024 * 1024;
     @SuppressWarnings("FieldCanBeLocal")
-    private boolean      bRecAudio    = true;
+    private boolean      bRecAudio    = false;
 
     //private WindowManager       mWindowManager;
     private MediaProjection     mMediaProejction;
@@ -116,17 +116,16 @@ public class RecorderService extends Service {
                 stopRecorder();
             }
             else {
-                Log.d(TAG, "SCREEN_RECORDING_STOP is not running...,No need Stop");
+                Log.e(TAG, "SCREEN_RECORDING_STOP is not running...,No need Stop");
             }
-
-
         } else if(action.equals(Const.getScreenRecordingStart())) {
             //TOAST("SCREEN_RECORDING_START!!!");
             Log.w(TAG, "SCREEN_RECORDING_START!!!");
             if(!isRunning()) {
                 if(mData == null || mResult != Activity.RESULT_OK) {
-                    Log.e(TAG, "Media mData or mResult is not correct,why ?");
-                    KinderApplication.getInstance().notfiyKeeplive(this, Intent.ACTION_MAIN);
+                    Log.e(TAG, "SCREEN_RECORDING_START mData or mResult is not correct,why ?");
+                    // check MainActivity on
+                    KinderApplication.getInstance().notifyKeeplive(this, Intent.ACTION_MAIN);
                 } else {
                     Log.d(TAG, "SCREEN_RECORDING_START is running...data:result - " + mData.toString() + ":" + mResult);
                     startRecorder();
@@ -157,6 +156,7 @@ public class RecorderService extends Service {
     public void onDestroy() {
         super.onDestroy();
         Log.e(TAG, "onDestroy().");
+        KinderApplication.getInstance().removeService(this);
     }
 
     public boolean isRunning() {
@@ -187,13 +187,13 @@ public class RecorderService extends Service {
             getRecorderConfig();
             mMediaRecorder = new MediaRecorder();
             if(!initRecorder()) {
-                throw new Exception("Init Recorder Error"); //return false;
+                throw new Exception("startRecorder() - Init Recorder Error"); //return false;
             }
 
             MediaProjectionManager mProjectionManager = (MediaProjectionManager) getSystemService(Context.MEDIA_PROJECTION_SERVICE);
             mMediaProejction = mProjectionManager.getMediaProjection(mResult, mData);
             if(mMediaProejction == null) {
-                Log.e(TAG, "mMediaProejction is NULL, why???");
+                Log.e(TAG, "startRecorder() mMediaProejction is NULL, why???");
             }
 
             createVirtualDisplay();
@@ -229,7 +229,7 @@ public class RecorderService extends Service {
         if (!bRunning) {
             return false;
         }
-        Log.i(TAG, "stopRecorder()");
+        Log.i(TAG, "stopRecorder() - ");
         bRunning = false;
         try {
             mMediaRecorder.stop();
@@ -248,21 +248,21 @@ public class RecorderService extends Service {
     }
 
     private void createVirtualDisplay() {
-        Log.i(TAG, "createVirtualDisplay()");
+        Log.i(TAG, "createVirtualDisplay() - ");
         mVirtualDisplay =  mMediaProejction.createVirtualDisplay("MainScreen",
                 WIDTH, HEIGHT, DENSITY_DPI, DisplayManager.VIRTUAL_DISPLAY_FLAG_AUTO_MIRROR,
                 mMediaRecorder.getSurface(), null, null);
     }
 
     private boolean initRecorder() {
-        Log.i(TAG, "initRecorder()");
+        Log.i(TAG, "initRecorder() - ");
         try {
 
             if(bRecAudio)
                 mMediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
             mMediaRecorder.setVideoSource(MediaRecorder.VideoSource.SURFACE);
             mMediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4);
-            mMediaRecorder.setOutputFile(getsaveDirectory() + mOutputFile + ".tmp");
+            mMediaRecorder.setOutputFile(getSaveDirectory() + mOutputFile + ".tmp");
             mMediaRecorder.setVideoSize(WIDTH, HEIGHT);
             mMediaRecorder.setVideoEncoder(MediaRecorder.VideoEncoder.H264);
             if(bRecAudio)
@@ -281,9 +281,9 @@ public class RecorderService extends Service {
         return true;
     }
 
-    public String getsaveDirectory() {
+    public String getSaveDirectory() {
         String rootDir = Const.getExternalLocaldir() + "/";
-        Log.i(TAG, "getsaveDirectory() - " + rootDir);
+        Log.i(TAG, "getSaveDirectory() - " + rootDir);
 
         File file = new File(rootDir);
         if (!file.exists()) {
@@ -301,7 +301,7 @@ public class RecorderService extends Service {
             return;
 
         Log.i(TAG, "startForeGround() :" + bFore);
-        KinderApplication.getInstance().notfiyKeeplive(this, Const.getNotificationHideRecord());
+        KinderApplication.getInstance().notifyKeeplive(this, Const.getNotificationHideRecord());
     }
 
     private void TOAST(String msg) {

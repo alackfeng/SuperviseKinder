@@ -27,7 +27,7 @@ public class FTPService extends Service {
     private LogManager              Log = LogManager.getInstance();
 
     @SuppressWarnings("FieldCanBeLocal")
-    private String                  mHost       = "192.168.106.233";
+    private String                  mHost       = "192.168.106.207";
     @SuppressWarnings("FieldCanBeLocal")
     private int                     mPort       = 21;
     @SuppressWarnings("FieldCanBeLocal")
@@ -79,7 +79,7 @@ public class FTPService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "onStartCommand() intent action:" + intent.getAction());
 
-        // connect to ftpserver
+        // connect to ftp server
         if(intent.getAction().equals(Const.getTaskUploadfileStart())) {
             Log.i(TAG, "click connect_button");
             if(ftpClient == null || !bConnected) {
@@ -99,7 +99,7 @@ public class FTPService extends Service {
                 Log.d(TAG, "NOT FOUND upload file!!!");
             }
         } else if(intent.getAction().equals(Const.getTaskUploadfileStop())) {
-            Log.i(TAG, "getTaskUploadfileStop()");
+            Log.i(TAG, "getTask Upload fileStop()");
         }
 
         return START_STICKY;
